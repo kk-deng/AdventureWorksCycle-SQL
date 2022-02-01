@@ -11,17 +11,14 @@ GO
 
 CREATE VIEW dbo.vCustomerRFM AS
 WITH Sales AS (
-SELECT *
-	, DATEDIFF(DAY, FirstDate, DATEADD(DAY, 1, LastDate)) AS ActiveDays
-FROM (
-	SELECT CustomerID
-		, SUM(TotalDue) AS TotalSpending
-		, MIN(OrderDate) AS FirstDate
-		, MAX(OrderDate) AS LastDate
-		, COUNT(DISTINCT SalesOrderID) AS NumOfTxn
-	FROM Sales.SalesOrderHeader
-	GROUP BY CustomerID
-	) AS BaseSales
+SELECT CustomerID
+	, SUM(TotalDue) AS TotalSpending
+	, COUNT(DISTINCT SalesOrderID) AS NumOfTxn
+	, MIN(OrderDate) AS FirstDate
+	, MAX(OrderDate) AS LastDate
+	, DATEDIFF(DAY, MIN(OrderDate), DATEADD(DAY, 1, MAX(OrderDate))) AS ActiveDays
+FROM Sales.SalesOrderHeader
+GROUP BY CustomerID
 ),
 Customers AS (
 SELECT c.CustomerID
