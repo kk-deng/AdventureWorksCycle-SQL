@@ -17,7 +17,6 @@ WITH RawSales AS (
 		, MIN(OrderDate) AS FirstDate
 		, MAX(OrderDate) AS LastDate
 		, DATEDIFF(DAY, MIN(OrderDate), DATEADD(DAY, 1, MAX(OrderDate))) AS ActiveDays
-		, CAST('2014-07-01T00:00:00.000' AS datetime) AS CurrentDate
 	FROM Sales.SalesOrderHeader
 	GROUP BY CustomerID
 ),
@@ -30,12 +29,11 @@ Customers AS (
 )
 SELECT RawSales.*
 	, ActiveWeeks =
-	CASE
-		WHEN CAST(RawSales.ActiveDays / 7 AS INT) = 0 THEN 1
-		ELSE CAST(RawSales.ActiveDays / 7 AS INT)
-	END
-	--, CAST(RawSales.ActiveDays / 7 AS INT) AS ActiveWeeks
-	, DATEDIFF(DAY, RawSales.LastDate, RawSales.CurrentDate) AS DaysSinceLastTxn
+		CASE
+			WHEN CAST(RawSales.ActiveDays / 7 AS INT) = 0 THEN 1
+			ELSE CAST(RawSales.ActiveDays / 7 AS INT)
+		END
+	, DATEDIFF(DAY, RawSales.LastDate, '2014-07-01T00:00:00.000') AS DaysSinceLastTxn
 	, Customers.FullName
 FROM RawSales
 	INNER JOIN Customers
