@@ -1,27 +1,57 @@
 -- Q1
 -- Get the top 10 popular products based on the sales quantity
 WITH Sale AS (
-SELECT ProductID
-	, SUM(OrderQty) AS SalesVolume
-	, SUM(LineTotal) AS Revenue
-	, ROUND(AVG(UnitPrice - UnitPriceDiscount), 2) AS AvgUnitPriceAfterDiscount
-FROM Sales.SalesOrderDetail
-GROUP BY ProductID
+	SELECT ProductID
+		, SUM(OrderQty) AS SalesVolume
+		, SUM(LineTotal) AS Revenue
+		, ROUND(AVG(UnitPrice - UnitPriceDiscount), 2) AS AvgUnitPriceAfterDiscount
+	FROM Sales.SalesOrderDetail
+	GROUP BY ProductID
 )
 SELECT TOP 10 
 	s.*
 	, p.Name
 FROM Sale s
-LEFT JOIN Production.Product p
-ON s.ProductID = p.ProductID
+	LEFT JOIN Production.Product p
+		ON s.ProductID = p.ProductID
 ORDER BY SalesVolume DESC;
 GO
 
+--Analysis:
 --The most popular product ID is 712 and its name is "AWC Logo Cap" with 8311 sales number 
 --and $51,229 gross revenue. Although it has the highest sales volume, it has a relatively 
 --lower unit price, which generated less than 30% of revenue of other products, such as 
 --Long-Sleeve Logo Jersey (~$200k) and Sport-100 Helmet (~$165k).
 
+--Q2 Top Salesperson
+WITH sv AS (
+	SELECT SalesPersonID
+		, ROUND(SUM(SubTotal), 2) AS SumSubTotal
+		, ROUND(SUM(TotalDue), 2) AS SalesVolume
+	FROM Sales.SalesOrderHeader
+	WHERE SalesPersonID IS NOT NULL
+		AND YEAR(OrderDate) = 2014
+	GROUP BY SalesPersonID
+),
+sp AS (
+	SELECT s.BusinessEntityID
+		, CONCAT(ISNULL(p.Title + ' ', ''), p.FirstName, ' ', p.LastName) AS FullName
+		, s.SalesQuota
+		, s.Bonus
+		, CommissionPct
+		, SalesLastYear
+		, SalesYTD
+		, SalesLastYear + SalesYTD AS SalesSinceLastYear
+	FROM Sales.SalesPerson s
+		INNER JOIN Person.Person p
+			ON s.BusinessEntityID = p.BusinessEntityID
+)
+SELECT sv.*
+	, sp.*
+FROM sv
+	LEFT JOIN sp
+		ON sv.SalesPersonID = sp.BusinessEntityID
+ORDER BY SalesVolume DESC
 
 -- Q2 - Create a view for RFM model: vCustomerRFM
 -- 2011-05-31 00:00:00.000 ~ 2014-06-30 00:00:00.000
@@ -85,3 +115,4 @@ WHERE RFM = 111
 ORDER BY RankWeeklySpending DESC;
 GO
 
+-- Q4 - 
