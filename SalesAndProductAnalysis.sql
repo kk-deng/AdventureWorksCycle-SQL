@@ -24,37 +24,31 @@ GO
 --Long-Sleeve Logo Jersey (~$200k) and Sport-100 Helmet (~$165k).
 
 --Q2 Top Salesperson
-WITH sv AS (
-	SELECT SalesPersonID
-		, ROUND(SUM(SubTotal), 2) AS SumSubTotal
-		, ROUND(SUM(TotalDue), 2) AS SalesVolume
-	FROM Sales.SalesOrderHeader
-	WHERE SalesPersonID IS NOT NULL
-		AND YEAR(OrderDate) = 2013
-	GROUP BY SalesPersonID
-),
-sp AS (
+WITH sp AS (
 	SELECT s.BusinessEntityID
 		, CONCAT(ISNULL(p.Title + ' ', ''), p.FirstName, ' ', p.LastName) AS FullName
 		, s.SalesQuota
 		, s.Bonus
-		, CommissionPct
+		, s.CommissionPct
+		, s.SalesYTD
+		, t.[Group] AS SalesRegion
 		--, SalesLastYear
-		, CONVERT(NVARCHAR(20), SalesYTD, 1) AS SalesYTD
+		--, CONVERT(NVARCHAR(20), SalesYTD, 1) AS SalesYTD
 	FROM Sales.SalesPerson s
 		INNER JOIN Person.Person p
 			ON s.BusinessEntityID = p.BusinessEntityID
+		INNER JOIN Sales.SalesTerritory t
+			ON s.TerritoryID = t.TerritoryID
 	WHERE s.SalesQuota IS NOT NULL
 )
-SELECT sv.*
-	, sp.*
+SELECT sp.*
+	, CONVERT(NVARCHAR(20), sp.SalesYTD, 1) AS SalesYearToDay
 	, ad.PostalCode
-FROM sv
-	LEFT JOIN sp
-		ON sv.SalesPersonID = sp.BusinessEntityID
+	, ROW_NUMBER() OVER (PARTITION BY SalesRegion ORDER BY SalesYTD DESC) AS Ranking
+FROM sp
 	INNER JOIN Person.Address AS ad
 	    ON ad.AddressID = sp.BusinessEntityID 
-ORDER BY SalesVolume DESC
+ORDER BY SalesRegion DESC
 
 -- Q2 - Create a view for RFM model: vCustomerRFM
 -- 2011-05-31 00:00:00.000 ~ 2014-06-30 00:00:00.000
