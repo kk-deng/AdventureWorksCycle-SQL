@@ -30,7 +30,7 @@ WITH sv AS (
 		, ROUND(SUM(TotalDue), 2) AS SalesVolume
 	FROM Sales.SalesOrderHeader
 	WHERE SalesPersonID IS NOT NULL
-		AND YEAR(OrderDate) = 2014
+		AND YEAR(OrderDate) = 2013
 	GROUP BY SalesPersonID
 ),
 sp AS (
@@ -39,18 +39,21 @@ sp AS (
 		, s.SalesQuota
 		, s.Bonus
 		, CommissionPct
-		, SalesLastYear
-		, SalesYTD
-		, SalesLastYear + SalesYTD AS SalesSinceLastYear
+		--, SalesLastYear
+		, CONVERT(NVARCHAR(20), SalesYTD, 1) AS SalesYTD
 	FROM Sales.SalesPerson s
 		INNER JOIN Person.Person p
 			ON s.BusinessEntityID = p.BusinessEntityID
+	WHERE s.SalesQuota IS NOT NULL
 )
 SELECT sv.*
 	, sp.*
+	, ad.PostalCode
 FROM sv
 	LEFT JOIN sp
 		ON sv.SalesPersonID = sp.BusinessEntityID
+	INNER JOIN Person.Address AS ad
+	    ON ad.AddressID = sp.BusinessEntityID 
 ORDER BY SalesVolume DESC
 
 -- Q2 - Create a view for RFM model: vCustomerRFM
