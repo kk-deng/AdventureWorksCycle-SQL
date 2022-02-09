@@ -1,15 +1,15 @@
 -- =============================================
--- Create View for Customer Segmentation:
--- Recency, Frequency, Monetary
+-- Create View for Customer Sales Summary:
+-- Days Since Last Transaction, Number of Transactions, Total Spending
 -- =============================================
 USE AdventureWorks2019
 GO
 
-IF object_id(N'dbo.vCustomerRFM', 'V') IS NOT NULL
-	DROP VIEW dbo.vCustomerRFM
+IF object_id(N'dbo.vCustomerSalesSummary', 'V') IS NOT NULL
+	DROP VIEW dbo.vCustomerSalesSummary
 GO
 
-CREATE VIEW dbo.vCustomerRFM AS
+CREATE VIEW dbo.vCustomerSalesSummary AS
 WITH RawSales AS (
 	SELECT CustomerID
 		, SUM(TotalDue) AS TotalSpending
