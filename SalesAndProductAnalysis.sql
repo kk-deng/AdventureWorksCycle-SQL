@@ -1,18 +1,33 @@
 -- Q1
 -- Get the top 10 popular products based on the sales quantity
-WITH Sale AS (
+WITH sale AS (
 	SELECT ProductID
 		, SUM(OrderQty) AS SalesVolume
 		, SUM(LineTotal) AS Revenue
-		, ROUND(AVG(UnitPrice - UnitPriceDiscount), 2) AS AvgUnitPriceAfterDiscount
+		, ROUND(AVG(UnitPrice * (1 - UnitPriceDiscount)), 2) AS AvgUnitPriceAfterDiscount
 	FROM Sales.SalesOrderDetail
 	GROUP BY ProductID
+),
+products AS (
+	SELECT p.ProductID
+		, p.Name AS ProductName
+		, s.ProductSubcategoryID
+		, s.Name AS SubcatName
+		, c.ProductCategoryID
+		, c.Name AS CatName
+	FROM Production.Product p
+		LEFT JOIN Production.ProductSubcategory s
+			ON p.ProductSubcategoryID = s.ProductSubcategoryID
+		LEFT JOIN Production.ProductCategory c
+			ON s.ProductCategoryID = c.ProductCategoryID
 )
 SELECT TOP 10 
 	s.*
-	, p.Name
-FROM Sale s
-	LEFT JOIN Production.Product p
+	, p.ProductName
+	, p.SubcatName
+	, p.CatName
+FROM sale s
+	LEFT JOIN products p
 		ON s.ProductID = p.ProductID
 ORDER BY SalesVolume DESC;
 GO
@@ -43,14 +58,20 @@ WITH sp AS (
 )
 SELECT sp.*
 	, CONVERT(NVARCHAR(20), sp.SalesYTD, 1) AS SalesYearToDay
-	, ad.PostalCode
 	, ROW_NUMBER() OVER (PARTITION BY SalesRegion ORDER BY SalesYTD DESC) AS Ranking
 FROM sp
-	INNER JOIN Person.Address AS ad
-	    ON ad.AddressID = sp.BusinessEntityID 
 ORDER BY SalesRegion DESC
 
--- Q2 - Create a view for RFM model: vCustomerRFM
+--Analysis:
+--14 salespersons have a sales target in 2014. All of them have met and exceeded the target.
+--North America has the most salesperson amongst all sales regions (10 salespersons). Lynn Tsoflia is responsible for 
+--sales in the Pacific region, generating around $1.42 million in sales. While in North America, Linda Mitchell won
+--the best salesperson who brought about $4.25 million in sales to the company, followed by Michael Blythe and 
+--Jillian Carson with $3.76 million and $3.19 million, respectively. In Europe region, Jae Pak has the highest sales ($4.12 million)
+
+
+
+-- Q2 - Create a view for RFM model: vCustomerSalesSummary
 -- 2011-05-31 00:00:00.000 ~ 2014-06-30 00:00:00.000
 WITH RawSales AS (
 	SELECT CustomerID
@@ -89,15 +110,15 @@ SELECT CustomerID
 	, CAST(NumOfTxn / ActiveWeeks AS FLOAT) AS WeeklyTxnNum
 	, TotalSpending / ActiveWeeks AS WeeklySpending
 	, DaysSinceLastTxn
-FROM vCustomerRFM
+FROM vCustomerSalesSummary
 ),
 CusRank AS (
-SELECT CusSales.*
+	SELECT CusSales.*
 --CustomerID
 --	, FullName
-	, NTILE(5) OVER (ORDER BY DaysSinceLastTxn) AS RankRecency
-	, NTILE(5) OVER (ORDER BY WeeklyTxnNum DESC) AS RankWeeklyTxnNum
-	, NTILE(5) OVER (ORDER BY WeeklySpending DESC) AS RankWeeklySpending
+	, NTILE(4) OVER (ORDER BY DaysSinceLastTxn) AS RankRecency
+	, NTILE(4) OVER (ORDER BY WeeklyTxnNum DESC) AS RankWeeklyTxnNum
+	, NTILE(4) OVER (ORDER BY WeeklySpending DESC) AS RankWeeklySpending
 FROM CusSales
 ),
 CusRFM AS (
