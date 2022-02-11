@@ -33,10 +33,46 @@ ORDER BY SalesVolume DESC;
 GO
 
 --Analysis:
---The most popular product ID is 712 and its name is "AWC Logo Cap" with 8311 sales number 
---and $51,229 gross revenue. Although it has the highest sales volume, it has a relatively 
+--The most popular product_ID by quantity is 712 and its name is "AWC Logo Cap" with 8311 units sold
+--which brought $51,229 gross revenue to the company. Although it has the highest sales volume, it has a relatively 
 --lower unit price, which generated less than 30% of revenue of other products, such as 
 --Long-Sleeve Logo Jersey (~$200k) and Sport-100 Helmet (~$165k).
+
+-- Q1B
+-- Get the top 10 popular products based on the gross revenue
+SELECT TOP 10
+	ProductID
+	, SUM(OrderQty) AS SalesVolume
+	, SUM(LineTotal) AS Revenue
+	, ProductName
+	, SubcatName
+	, CatName
+FROM vProductSalesSummary
+GROUP BY ProductID
+	, ProductName
+	, SubcatName
+	, CatName
+ORDER BY Revenue DESC
+
+--Analysis:
+--The most popular product_ID by revenue is 782 with revenue of $4.4 million. 
+--In the top 10 best selling items, all of them are bikes, and the top 6 items are mountain bikes. 
+--Because bikes have a higher unit price, although the Mountain-200 Black bike has only around three thousand units sold, 
+--the unit price of this model is $1229.
+
+-- Q1C
+-- The most popular subcategory by order numbers
+SELECT TOP 10
+	SubcatName
+	, COUNT(DISTINCT(SalesOrderID)) AS TotalOrders
+	, SUM(OrderQty) AS SalesVolume
+	, SUM(LineTotal) AS Revenue
+	, CatName
+FROM vProductSalesSummary
+GROUP BY SubcatName
+	, CatName
+ORDER BY TotalOrders DESC
+
 
 --Q2 Top Salesperson
 WITH sp AS (
