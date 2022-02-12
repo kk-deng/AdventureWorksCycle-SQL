@@ -73,6 +73,20 @@ GROUP BY SubcatName
 	, CatName
 ORDER BY TotalOrders DESC
 
+SELECT CatName
+	, COUNT(DISTINCT(SalesOrderID)) AS TotalOrders
+	, SUM(OrderQty) AS SalesVolume
+	, SUM(LineTotal) AS Revenue
+FROM vProductSalesSummary
+GROUP BY CatName
+ORDER BY TotalOrders DESC
+
+--Analysis:
+--In the top 10 subcategories, tires and tubes are the most demanding products with more than 10,000 orders.
+--However, road bikes has the most units sold in the top 10, having 47,196 items with around 9,500 orders.
+--In terms of the categories, accessories have the highest sales orders (19,524) amongst these four main categories,
+--followed by bikes (18,368).
+
 
 --Q2 Top Salesperson
 WITH sp AS (
