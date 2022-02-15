@@ -2,6 +2,14 @@
 
 AdventureWorks Database is a Microsoft product sample for an online transaction processing (OLTP) database. The AdventureWorks Database supports a fictitious, multinational manufacturing company called Adventure Works Cycles. 
 
+
+* Using `CALCULATE` and `ALL` functions to calculate the percentage of total by ignoring the filters.
+
+```DAX
+% Of TotalOrderAddress = CALCULATE(COUNT('Sales SalesOrderHeader'[BillToAddressID]))/CALCULATE(COUNT('Sales SalesOrderHeader'[BillToAddressID]),ALL('Sales SalesOrderHeader'))
+```
+
+
 * Create a calendar dimension table
 
 * Power Query to create a date dimension table 
