@@ -179,8 +179,15 @@ SELECT CusRank.*
 	, RankRecency + RankWeeklyTxnNum + RankWeeklySpending AS RFMSum
 FROM CusRank
 )
-SELECT * 
+SELECT RFMSum
+	, COUNT(DISTINCT(CustomerID)) AS CustomerCount
+	, COUNT(*) * 100.0 / SUM(COUNT(*)) OVER() AS PercentageTotal
 FROM CusRFM
-WHERE RFM = 111
-ORDER BY RankWeeklySpending DESC;
+GROUP BY RFMSum
+ORDER BY RFMSum
 GO
+
+--Analysis:
+--RFMSum is the sum of each segment of R, F, and M. The lower the value, the higher tier the customer is.
+--The RFMSum of 3 means the most valuable customers. In the result, it has 796 customers ranked as the top tier (4.2%).
+--While the RFMSum of 9 has the most population (21.9%).
