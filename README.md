@@ -2,10 +2,12 @@
 
 AdventureWorks Database is a Microsoft product sample for an online transaction processing (OLTP) database. The AdventureWorks Database supports a fictitious, multinational manufacturing company called Adventure Works Cycles. 
 
+[Click to view online Power BI Dashboard](https://app.powerbi.com/view?r=eyJrIjoiMzk4MzQzZTgtNDJhZC00MGZmLWExNTAtNzliNTQ4MDExODM1IiwidCI6ImZiNjNlMDc5LWY3ODktNGFlNS1iY2Y5LTk0MDQ5NWRlYzhlNiJ9&pageName=ReportSection)
+
 
 * Using `CALCULATE` and `ALL` functions to calculate the percentage of total by ignoring the filters.
 
-```DAX
+```excel
 % Of TotalOrderAddress = CALCULATE(COUNT('Sales SalesOrderHeader'[BillToAddressID]))/CALCULATE(COUNT('Sales SalesOrderHeader'[BillToAddressID]),ALL('Sales SalesOrderHeader'))
 ```
 
@@ -40,6 +42,8 @@ let
 in
     #"Inserted Short Month"
 ```
+
+Another way to create dimension calendar table by using DAX.
 ```
 DimDate = ADDCOLUMNS(CALENDAR(MIN('Sales SalesOrderHeader'[OrderDate]), MAX('Sales SalesOrderHeader'[OrderDate]))
                         , "Short Month", FORMAT([Date], "MMM")
