@@ -7,10 +7,11 @@ AdventureWorks Database is a Microsoft product sample for an online transaction 
 ## Screenshots
 
 ### Dashboard
-![dashboard](screenshots\dashboard.png "Dashboard")
+
+<img src="https://github.com/kk-deng/AdventureWorksCycle-SQL/blob/main/screenshots/dashboard.png">
 
 ### Relation Model
-![relation](screenshots\relationdiagram.png "Relation")
+<img src="https://github.com/kk-deng/AdventureWorksCycle-SQL/blob/main/screenshots/relationdiagram.png">
 
 
 * Using `IF`, `ROUND`, `TODAY`, `DAY` functions to calculate the exact age of customers today
