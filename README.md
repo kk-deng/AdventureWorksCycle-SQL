@@ -4,6 +4,34 @@ AdventureWorks Database is a Microsoft product sample for an online transaction 
 
 [Click to view online Power BI Dashboard](https://app.powerbi.com/view?r=eyJrIjoiMzk4MzQzZTgtNDJhZC00MGZmLWExNTAtNzliNTQ4MDExODM1IiwidCI6ImZiNjNlMDc5LWY3ODktNGFlNS1iY2Y5LTk0MDQ5NWRlYzhlNiJ9&pageName=ReportSection)
 
+## Screenshots
+
+### Dashboard
+![dashboard](screenshots\dashboard.png "Dashboard")
+
+### Relation Model
+![relation](screenshots\relationdiagram.png "Relation")
+
+
+* Using `IF`, `ROUND`, `TODAY`, `DAY` functions to calculate the exact age of customers today
+   
+```excel
+Age (Today) = ROUND(IF('Sales vPersonDemographics'[BirthDate] < TODAY(), DATEDIFF('Sales vPersonDemographics'[BirthDate], TODAY(), DAY) / 365.25, 0), 0)
+```
+
+* Using `CALCULATE`, and `FILTER`, `ALL` functions to calculate bikes category sales out of all categories regardless of the global filter
+
+```excel
+% Of TotalCategory = 
+CALCULATE(
+    SUM(vProductSalesSummary[OrderQty])/CALCULATE(
+        SUM(vProductSalesSummary[OrderQty]),
+        ALL(vProductSalesSummary)
+    ),
+    FILTER(ALL(vProductSalesSummary), vProductSalesSummary[CatName] = "bikes")
+)
+```
+
 
 * Using `CALCULATE` and `ALL` functions to calculate the percentage of total by ignoring the filters.
 
