@@ -35,6 +35,4 @@ FROM CusRank
 )
 SELECT * 
 FROM CusRFM
-WHERE RFM = 111
-ORDER BY RankWeeklySpending DESC;
 GO

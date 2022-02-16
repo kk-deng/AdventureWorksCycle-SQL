@@ -1,3 +1,5 @@
+-- PRODUCTS SALES
+
 -- Q1
 -- Get the top 10 popular products based on the sales quantity
 WITH sale AS (
@@ -38,7 +40,7 @@ GO
 --lower unit price, which generated less than 30% of revenue of other products, such as 
 --Long-Sleeve Logo Jersey (~$200k) and Sport-100 Helmet (~$165k).
 
--- Q1B
+-- Q2
 -- Get the top 10 popular products based on the gross revenue
 SELECT TOP 10
 	ProductID
@@ -60,7 +62,7 @@ ORDER BY Revenue DESC
 --Because bikes have a higher unit price, although the Mountain-200 Black bike has only around three thousand units sold, 
 --the unit price of this model is $1229.
 
--- Q1C
+-- Q3
 -- The most popular subcategory by order numbers
 SELECT TOP 10
 	SubcatName
@@ -87,8 +89,9 @@ ORDER BY TotalOrders DESC
 --In terms of the categories, accessories have the highest sales orders (19,524) amongst these four main categories,
 --followed by bikes (18,368).
 
-
---Q2 Top Salesperson
+--PEOPLE
+--Q4 
+--Get the Top Salesperson by Sales Volume
 WITH sp AS (
 	SELECT s.BusinessEntityID
 		, CONCAT(ISNULL(p.Title + ' ', ''), p.FirstName, ' ', p.LastName) AS FullName
@@ -119,9 +122,8 @@ ORDER BY SalesRegion DESC
 --the best salesperson who brought about $4.25 million in sales to the company, followed by Michael Blythe and 
 --Jillian Carson with $3.76 million and $3.19 million, respectively. In Europe region, Jae Pak has the highest sales ($4.12 million)
 
-
-
--- Q2 - Create a view for RFM model: vCustomerSalesSummary
+-- CUSTOMER SALES
+-- Q5 - Create a view for RFM model: vCustomerSalesSummary
 -- 2011-05-31 00:00:00.000 ~ 2014-06-30 00:00:00.000
 WITH RawSales AS (
 	SELECT CustomerID
@@ -153,7 +155,7 @@ FROM RawSales
 		ON RawSales.CustomerID = Customers.CustomerID;
 GO
 
--- Q3 - Individual Customer Segmentation with RFM Model
+-- Q6 Customer Segmentation with RFM Model
 WITH CusSales AS (
 SELECT CustomerID
 	, FullName
@@ -182,5 +184,3 @@ FROM CusRFM
 WHERE RFM = 111
 ORDER BY RankWeeklySpending DESC;
 GO
-
--- Q4 - 
