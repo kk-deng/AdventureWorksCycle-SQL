@@ -70,7 +70,7 @@ There are many ways to create a calendar dim table. I have used two of them: Pow
 
 * Create a calendar dimension table
 
-   * Power Query:
+1. Power Query:
 
 ```
 let
@@ -99,7 +99,8 @@ in
     #"Inserted Short Month"
 ```
 
-      * DAX: 
+2. DAX: 
+
 ```
 DimDate = ADDCOLUMNS(CALENDAR(MIN('Sales SalesOrderHeader'[OrderDate]), MAX('Sales SalesOrderHeader'[OrderDate]))
                         , "Short Month", FORMAT([Date], "MMM")
