@@ -62,7 +62,7 @@ CALCULATE(
 
 During the plotting of time series data, I found it helpful to create a calender dimension table that has each date as one record for all dates in the data.
 
-*The default behaviours of Power BI is combining all values for the same day (1st, 2nd, etc.) or the same month while changing the date hierarchy to DAY or MONTH. This calendar dim table can solve this issue.*
+   *The default behaviours of Power BI is combining all values for the same day (1st, 2nd, etc.) or the same month while changing the date hierarchy to DAY or MONTH. This calendar dim table can solve this issue.*
 
 This table has week number and the start date of each month so that a continuous date period can be used for x-axis.
 
@@ -99,7 +99,7 @@ in
     #"Inserted Short Month"
 ```
 
-   * DAX: 
+      * DAX: 
 ```
 DimDate = ADDCOLUMNS(CALENDAR(MIN('Sales SalesOrderHeader'[OrderDate]), MAX('Sales SalesOrderHeader'[OrderDate]))
                         , "Short Month", FORMAT([Date], "MMM")
