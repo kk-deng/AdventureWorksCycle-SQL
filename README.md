@@ -13,12 +13,23 @@ AdventureWorks Database is a Microsoft product sample for an online transaction 
 ### Relation Model
 <img src="https://github.com/kk-deng/AdventureWorksCycle-SQL/blob/main/screenshots/relationdiagram.png">
 
+## Highlights
+
+### How to calculate the age of customers
 
 * Using `IF`, `ROUND`, `TODAY`, `DAY` functions to calculate the exact age of customers today
+* A safe fail check for the BirthDate value, divided by the average days of a year, then round the value to the closest integer.
    
 ```excel
-Age (Today) = ROUND(IF('Sales vPersonDemographics'[BirthDate] < TODAY(), DATEDIFF('Sales vPersonDemographics'[BirthDate], TODAY(), DAY) / 365.25, 0), 0)
+Age (Today) = 
+ROUND(
+   IF('Sales vPersonDemographics'[BirthDate] < TODAY(), 
+      DATEDIFF('Sales vPersonDemographics'[BirthDate], TODAY(), DAY) / 365.25, 
+      0), 
+0)
 ```
+
+### How to calculate the fixed value of bike sales in North America
 
 * Using `CALCULATE`, and `FILTER`, `ALL` functions to calculate bikes category sales out of all categories regardless of the global filter
 
@@ -33,17 +44,33 @@ CALCULATE(
 )
 ```
 
+### How to calculate the number of sales in North America
 
 * Using `CALCULATE` and `ALL` functions to calculate the percentage of total by ignoring the filters.
 
 ```excel
-% Of TotalOrderAddress = CALCULATE(COUNT('Sales SalesOrderHeader'[BillToAddressID]))/CALCULATE(COUNT('Sales SalesOrderHeader'[BillToAddressID]),ALL('Sales SalesOrderHeader'))
+% Of TotalOrderAddress = 
+CALCULATE(
+   COUNT('Sales SalesOrderHeader'[BillToAddressID])
+)/CALCULATE(
+   COUNT('Sales SalesOrderHeader'[BillToAddressID]),
+   ALL('Sales SalesOrderHeader')
+)
 ```
 
+### Calendar Dimension Table
+
+During the plotting of time series data, I found it helpful to create a calender dimension table that has each date as one record for all dates in the data.
+
+*The default behaviours of Power BI is combining all values for the same day (1st, 2nd, etc.) or the same month while changing the date hierarchy to DAY or MONTH. This calendar dim table can solve this issue.*
+
+This table has week number and the start date of each month so that a continuous date period can be used for x-axis.
+
+There are many ways to create a calendar dim table. I have used two of them: Power Query and DAX
 
 * Create a calendar dimension table
 
-* Power Query to create a date dimension table 
+   * Power Query:
 
 ```
 let
@@ -72,7 +99,7 @@ in
     #"Inserted Short Month"
 ```
 
-Another way to create dimension calendar table by using DAX.
+   * DAX: 
 ```
 DimDate = ADDCOLUMNS(CALENDAR(MIN('Sales SalesOrderHeader'[OrderDate]), MAX('Sales SalesOrderHeader'[OrderDate]))
                         , "Short Month", FORMAT([Date], "MMM")
